@@ -1,7 +1,8 @@
 name: Import Clareffio codebase
 
 on:
-  push:
+  pull_request:
+    types: [opened, reopened, synchronize]
     branches: [main]
 
 permissions:
@@ -9,11 +10,11 @@ permissions:
 
 jobs:
   import:
-    if: github.event.head_commit.message == 'Import complete Clareffio codebase'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
       - name: Import exact Clareffio snapshot
         run: |
@@ -23,6 +24,8 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           rsync -a --delete --exclude='.git' /tmp/clareffio-source/ ./
           rm -f .github/workflows/clareffio-domain-cutover.yml
+          rm -f .github/workflows/import-clareffio.yml
+          rm -f .clareffio-import-trigger
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
