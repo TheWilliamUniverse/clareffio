@@ -1,0 +1,30 @@
+name: Import Clareffio codebase
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    if: github.event.head_commit.message == 'Import complete Clareffio codebase'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Import exact Clareffio snapshot
+        run: |
+          git clone --quiet https://github.com/TheWilliamUniverse/greffio.git /tmp/clareffio-source
+          cd /tmp/clareffio-source
+          git checkout --quiet 628becfb942ac46830b5c0c2030f47306224f327
+          cd "$GITHUB_WORKSPACE"
+          rsync -a --delete --exclude='.git' /tmp/clareffio-source/ ./
+          rm -f .github/workflows/clareffio-domain-cutover.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Import Clareffio from Greffio migration snapshot'
+          git push origin HEAD:main
