@@ -60,7 +60,7 @@ jobs:
       - name: Build web bundle
         env:
           VITE_API_BASE_URL: https://api.greffio.willentreprises.com
-          VITE_APP_URL: https://greffio.willentreprises.com
+          VITE_APP_URL: https://clareffio.willentreprises.com
         run: npm run build
 
       - name: Sync Capacitor
