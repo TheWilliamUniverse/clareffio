@@ -1,0 +1,42 @@
+name: Frontend CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:statutes
+      - run: npm run test:login-alerts
+      - run: npm run build
+      - run: node scripts/verify-build-assets.js
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=chromium-desktop
+        env:
+          CI: true
+      - run: npm run test:e2e:matrix
+        env:
+          CI: true
+      - name: Smoke public routes
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 &
+          sleep 3
+          curl -fsS http://127.0.0.1:4173/ | head -c 200
+          curl -fsS http://127.0.0.1:4173/login | head -c 200
+          curl -fsS http://127.0.0.1:4173/tarifs | head -c 200
+      - name: Lighthouse desktop + mobile
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 &
+          sleep 4
+          npx @lhci/cli@0.14.0 autorun --config=lighthouserc.cjs || true
+          npx @lhci/cli@0.14.0 autorun --config=lighthouserc.mobile.cjs || true
