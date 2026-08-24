@@ -1,0 +1,168 @@
+{
+  "releases": [
+    {
+      "versionName": "1.2.0",
+      "versionCode": 26145200,
+      "artifact": "greffio-1.2.0-26145200.aab",
+      "sha256": "6D8765E12C6A7AC8A92354F36AD359AA4EDAA00BA35DDF528CDBD68A9A3F7E56",
+      "sizeBytes": 8438088,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.1",
+      "versionCode": 261510000,
+      "artifact": "greffio-1.2.1-261510000.aab",
+      "sha256": "4D006DE6FDD226267FC039B0A988FE2306105BEBBDF2F375E8F5B6325DA57AF4",
+      "sizeBytes": 8445361,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.2",
+      "versionCode": 261510001,
+      "artifact": "greffio-1.2.2-261510001.aab",
+      "sha256": "2F0A3F9DA15E5D3DB2233AC19A1AD6B4B1E9F8A7BB380415D6598473C37163A0",
+      "sizeBytes": 8445375,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.3",
+      "versionCode": 261510002,
+      "artifact": "greffio-1.2.3-261510002.aab",
+      "sha256": "310B6CBDF2C15E9FA7EF961B46B6BE3E729197BB53AC5EBDA54DFF435A9C937A",
+      "sizeBytes": 8445760,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.4",
+      "versionCode": 261510003,
+      "artifact": "greffio-1.2.4-261510003.aab",
+      "sha256": "CE82813EC9E9A7BD368F773020085451DB1C27950081EC1F41982D6815A0CC82",
+      "sizeBytes": 9895679,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.5",
+      "versionCode": 261510004,
+      "artifact": "greffio-1.2.5-261510004.aab",
+      "sha256": "409BEC6771D39224463F31FC9524652210C002A37049C34F5F1F4D43D1563664",
+      "sizeBytes": 9901407,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.6",
+      "versionCode": 261510005,
+      "artifact": "greffio-1.2.6-261510005.aab",
+      "sha256": "30195995514AEAA6A72D670C49BB4ABD3C0A0A1E379A5E44A54DF75B88135F76",
+      "sizeBytes": 9907742,
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.7",
+      "versionCode": 261510006,
+      "artifact": "greffio-1.2.7-261510006.aab",
+      "sha256": "EF08ACDB39FEF3CDB07014DF27AB85D3BF19C38F6741A819919144B2EA6694B4",
+      "sizeBytes": 9940051,
+      "builtAt": "2026-05-08",
+      "gitCommit": "b591034",
+      "notesFile": "../MOBILE_RELEASE_1.2.7.md",
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.8",
+      "versionCode": 261510007,
+      "artifact": "greffio-1.2.8-261510007.aab",
+      "sha256": "210E32C4DBC4EF708230158FC4B55E306B2CA8B213BD9A37C912864016A4B655",
+      "sizeBytes": 9945318,
+      "builtAt": "2026-06-08",
+      "notesFile": "../MOBILE_RELEASE_1.2.8.md",
+      "archivedAt": "2026-05-29"
+    },
+    {
+      "versionName": "1.2.9",
+      "versionCode": 261510008,
+      "artifact": "greffio-1.2.9-261510008.aab",
+      "sha256": "CBC79D67828454C08C8723D11F0B54A9AA2E41E4ADC7AB2C1476CEF433F35AA1",
+      "sizeBytes": 9947473,
+      "builtAt": "2026-06-08",
+      "notesFile": "../MOBILE_RELEASE_1.2.9.md",
+      "archivedAt": "2026-06-08"
+    },
+    {
+      "versionName": "1.2.10",
+      "versionCode": 261510009,
+      "artifact": "greffio-1.2.10-261510009.aab",
+      "sha256": null,
+      "sizeBytes": 10121410,
+      "builtAt": "2026-06-13",
+      "notesFile": "../MOBILE_RELEASE_1.2.10.md",
+      "archivedAt": "2026-06-13"
+    },
+    {
+      "versionName": "1.2.11",
+      "versionCode": 261510010,
+      "artifact": "greffio-1.2.11-261510010.aab",
+      "sha256": "6CB27863A7EC6F0705844430789AD54FDA06A65CBC138AAA37D26F9D8D27091E",
+      "sizeBytes": 10002216,
+      "builtAt": "2026-06-13",
+      "gitCommit": "910e759",
+      "notesFile": "../MOBILE_RELEASE_1.2.11.md",
+      "archivedAt": "2026-06-13"
+    },
+    {
+      "versionName": "1.2.12",
+      "versionCode": 261510011,
+      "artifact": "greffio-1.2.12-261510011.aab",
+      "sha256": "529E722A827CD5AF34F977F5026E86DD900E03AC8337FB7D9DE3134174ABE127",
+      "sizeBytes": 10007275,
+      "builtAt": "2026-06-13",
+      "gitCommit": "6c8eaf6",
+      "notesFile": "../MOBILE_RELEASE_1.2.12.md",
+      "archivedAt": "2026-06-13"
+    },
+    {
+      "versionName": "1.2.13",
+      "versionCode": 261510012,
+      "artifact": "greffio-1.2.13-261510012.aab",
+      "sha256": "EA372D42EB9E6CB4B11567EF7C83BF2AEFD451FF6536B2B89DDE52BDED6E7379",
+      "sizeBytes": 10010641,
+      "builtAt": "2026-06-13",
+      "notesFile": "../MOBILE_RELEASE_1.2.13.md",
+      "archivedAt": "2026-06-13"
+    },
+    {
+      "versionName": "1.2.14",
+      "versionCode": 261510013,
+      "artifact": "greffio-1.2.14-261510013.aab",
+      "sha256": "03698565BB3BB18D862E2858A7B061DCFF832917E38117A327924FC31B7BDA45",
+      "sizeBytes": 10012030,
+      "builtAt": "2026-06-13",
+      "notesFile": "../MOBILE_RELEASE_1.2.14.md",
+      "archivedAt": "2026-06-13"
+    },
+    {
+      "versionName": "1.2.15",
+      "versionCode": 261510014,
+      "artifact": "greffio-1.2.15-261510014.aab",
+      "sha256": "EC158E6175A2B76A53951F4397AF5EAE2F39B40522E79B174CB212F15ACACC98",
+      "sizeBytes": 10012354,
+      "builtAt": "2026-06-13",
+      "gitCommit": "3b4373b",
+      "notesFile": "../MOBILE_RELEASE_1.2.15.md",
+      "mode": "capacitor-remote",
+      "archivedAt": "2026-06-13"
+    },
+    {
+      "versionName": "1.2.18",
+      "versionCode": 261510017,
+      "artifact": "greffio-1.2.18-261510017.aab",
+      "sha256": "45E5B041D4FDB7467BFA8FB16BC60CB67FBB75F883E02399FD8B608E734E95E5",
+      "sizeBytes": 11031296,
+      "builtAt": "2026-06-14",
+      "gitCommit": "d0062cc",
+      "notesFile": "../MOBILE_RELEASE_1.2.18.md",
+      "mode": "capacitor-remote",
+      "archivedAt": "2026-06-14"
+    }
+  ],
+  "package": "com.greffio.app"
+}
