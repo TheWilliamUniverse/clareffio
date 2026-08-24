@@ -22,9 +22,7 @@ jobs:
           cd /tmp/clareffio-source
           git checkout --quiet 628becfb942ac46830b5c0c2030f47306224f327
           cd "$GITHUB_WORKSPACE"
-          rsync -a --delete --exclude='.git' /tmp/clareffio-source/ ./
-          rm -f .github/workflows/clareffio-domain-cutover.yml
-          rm -f .github/workflows/import-clareffio.yml
+          rsync -a --delete --exclude='.git' --exclude='.github/workflows/' /tmp/clareffio-source/ ./
           rm -f .clareffio-import-trigger
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
