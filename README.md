@@ -52,7 +52,7 @@ Configuration cible :
 - install : `npm ci`
 - build : `npm run hostinger:build`
 - output : `dist`
-- entry file : `server/hostinger-frontend.js`
+- entry file : `hostinger-entry.js`
 
 Variables frontend minimales :
 
