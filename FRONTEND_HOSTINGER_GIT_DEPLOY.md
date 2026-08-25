@@ -21,17 +21,20 @@ Réglages recommandés :
 
 `hostinger-entry.js` charge le serveur frontend dédié dans `server/hostinger-frontend.js`. Celui-ci écoute `process.env.PORT` avec fallback sur le port `3000`, sert le build Vite dans `dist`, gère le fallback SPA React Router et expose `/health`.
 
+**Ne définis pas `NODE_ENV=production` avant l'installation/build Hostinger** : Vite et plusieurs outils de compilation sont dans les `devDependencies`. Le runtime Hostinger peut gérer son mode production séparément après le build.
+
 ## Variables d'environnement du FRONTEND Hostinger
 
 Ajouter uniquement les variables publiques nécessaires au build / frontend :
 
 ```env
-NODE_ENV=production
 VITE_APP_NAME=Clareffio
 VITE_APP_URL=https://clareffio.willentreprises.com
 VITE_API_BASE_URL=https://api.greffio.willentreprises.com
 API_PUBLIC_URL=https://api.greffio.willentreprises.com
 ```
+
+Le même jeu de variables est fourni dans `hostinger.frontend.env.example`.
 
 Le backend/API reste provisoirement sur `api.greffio.willentreprises.com` pendant la bascule de marque. Le domaine public du frontend est `clareffio.willentreprises.com`.
 
