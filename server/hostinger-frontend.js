@@ -13,8 +13,9 @@ const apiBase = String(
 ).replace(/\/$/, '');
 
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
-/** Canonical : www → apex HTTPS (revue Mollie + SEO). */
+/** Canonical host: www -> apex HTTPS. */
 app.use((req, res, next) => {
   const host = String(req.headers.host || '').split(':')[0].toLowerCase();
   if (host.startsWith('www.')) {
@@ -41,13 +42,13 @@ const proxyToApi = async (req, res, apiPath) => {
   } catch (error) {
     return res.status(502).json({
       ok: false,
-      error: 'MOLLIE_API_PROXY_FAILED',
+      error: 'CLAREFFIO_API_PROXY_FAILED',
       message: error?.message || 'Proxy failed',
     });
   }
 };
 
-/** Mollie : éviter que le SPA avale /api/* (dashboard → greffio.willentreprises.com). */
+/** Keep payment callback/webhook paths outside the SPA. */
 app.get('/api/mollie/callback', (req, res) => {
   const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
   return res.redirect(302, `${apiBase}/api/mollie/callback${query}`);
@@ -65,13 +66,19 @@ app.post(
 );
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, service: 'greffio-frontend', timestamp: new Date().toISOString() });
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({
+    ok: true,
+    service: 'clareffio-frontend',
+    apiBase,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use(express.static(distDir, {
   index: false,
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html') || filePath.endsWith('sw.js')) {
+    if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('version.json')) {
       res.setHeader('Cache-Control', 'no-store');
       return;
     }
@@ -79,6 +86,7 @@ app.use(express.static(distDir, {
   },
 }));
 
+/** React Router SPA fallback. */
 app.use((req, res) => {
   if (req.method !== 'GET') {
     return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
@@ -86,7 +94,7 @@ app.use((req, res) => {
   return res.sendFile(path.join(distDir, 'index.html'));
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`[greffio-frontend] serving ${distDir} on port ${port}`);
+  console.log(`[clareffio-frontend] serving ${distDir} on 0.0.0.0:${port}`);
 });
