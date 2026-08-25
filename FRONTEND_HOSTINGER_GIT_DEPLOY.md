@@ -1,55 +1,71 @@
-# Frontend Deployment on Hostinger without ZIP
+# Clareffio — déploiement Hostinger Web App via GitHub
 
-This config removes manual ZIP uploads for frontend updates.
+Ce dépôt est préparé pour être connecté directement à **Hostinger → Deploy Web App → GitHub**.
 
-## Goal
+## Source
 
-Deploy `greffio.willentreprises.com` from GitHub automatically.
+- Repository : `TheWilliamUniverse/clareffio`
+- Branch : `main`
+- Root directory : `./`
+- Node.js : `20.x`
+- Framework : `Other` si l'auto-détection React ne permet pas de définir l'entry file
 
-## Prerequisites
+## Build Hostinger
 
-- Project code pushed to GitHub (`main` branch)
-- Hostinger supports Git deploy or Node.js web app build + publish
+Réglages recommandés :
 
-## Hostinger app settings
+- Install command : `npm ci`
+- Build command : `npm run hostinger:build`
+- Output directory : `dist`
+- Entry file : `server/hostinger-frontend.js`
 
-- Repository: `TheWilliamUniverse/greffio`
-- Branch: `main`
-- Root directory: `./`
-- Node version: `20.x`
-- If framework auto-detection fails, set framework to `Other`
-- Install command: `npm ci`
-- Build command: `npm run hostinger:build`
-- Start command: `npm run hostinger:start`
-- Output directory (if required by UI): `dist`
+Le serveur d'entrée écoute `process.env.PORT` avec fallback sur le port `3000`, sert le build Vite dans `dist`, gère le fallback SPA React Router et expose `/health`.
 
-This repository is a monorepo-like setup (frontend + backend + mobile).
-Using `hostinger:start` guarantees Hostinger runs a valid Node entrypoint and serves the Vite build reliably.
+## Variables d'environnement du FRONTEND Hostinger
 
-## Frontend environment variables
-
-Set only public variables:
+Ajouter uniquement les variables publiques nécessaires au build / frontend :
 
 ```env
+NODE_ENV=production
+VITE_APP_NAME=Clareffio
+VITE_APP_URL=https://clareffio.willentreprises.com
 VITE_API_BASE_URL=https://api.greffio.willentreprises.com
-VITE_APP_URL=https://greffio.willentreprises.com
+API_PUBLIC_URL=https://api.greffio.willentreprises.com
 ```
 
-## Never expose these in frontend
+Le backend/API reste provisoirement sur `api.greffio.willentreprises.com` pendant la bascule de marque. Le domaine public du frontend est `clareffio.willentreprises.com`.
 
-Do NOT put in Hostinger frontend env:
+### Ne jamais ajouter au frontend Hostinger
 
-- `GOOGLE_PAY_API_KEY` (backend VPS uniquement)
-- `JWT_SECRET`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_SECRET_KEY`
+Ne pas copier les secrets backend dans cette Web App :
+
 - `DATABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `AWS_SECRET_ACCESS_KEY`
+- `JWT_SECRET`
+- `OPENAI_API_KEY`
+- `MOLLIE_API_KEY`
+- `BREVO_API_KEY`
+- toute autre clé privée / service-role
 
-## Deploy flow
+Ils restent sur l'infrastructure backend.
 
-1. Commit and push changes to GitHub
-2. Hostinger pulls latest commit
-3. Hostinger builds `dist`
-4. New frontend is published automatically
+## Vérification après déploiement
 
-No ZIP required in this mode.
+Vérifier dans cet ordre :
+
+1. `/health` doit répondre avec `"ok": true` et `"service": "clareffio-frontend"`.
+2. `/` doit afficher la landing Clareffio.
+3. `/login`, `/tarifs` et une route React profonde doivent se charger directement sans 404.
+4. Le favicon doit utiliser l'arc Clareffio.
+5. Le header doit utiliser le wordmark SVG Clareffio bleu.
+6. Les requêtes API doivent partir vers `https://api.greffio.willentreprises.com` tant que le backend n'a pas été renommé.
+7. Tester le callback de paiement avant toute coupure de l'ancien frontend.
+
+## Déploiements suivants
+
+Une fois l'intégration GitHub activée, Hostinger peut reconstruire automatiquement l'application à chaque push sur `main` selon les capacités du plan. Aucun ZIP manuel n'est nécessaire.
+
+## Passage futur à clareffio.com
+
+Ne pas modifier maintenant les identifiants techniques backend / mobile uniquement pour le changement de domaine. Le passage à `clareffio.com` fera l'objet d'une bascule séparée : DNS, canonical/SEO, CORS, callbacks paiement, universal/app links et variables d'environnement.
