@@ -17,9 +17,9 @@ Réglages recommandés :
 - Install command : `npm ci`
 - Build command : `npm run hostinger:build`
 - Output directory : `dist`
-- Entry file : `server/hostinger-frontend.js`
+- Entry file : `hostinger-entry.js`
 
-Le serveur d'entrée écoute `process.env.PORT` avec fallback sur le port `3000`, sert le build Vite dans `dist`, gère le fallback SPA React Router et expose `/health`.
+`hostinger-entry.js` charge le serveur frontend dédié dans `server/hostinger-frontend.js`. Celui-ci écoute `process.env.PORT` avec fallback sur le port `3000`, sert le build Vite dans `dist`, gère le fallback SPA React Router et expose `/health`.
 
 ## Variables d'environnement du FRONTEND Hostinger
 
