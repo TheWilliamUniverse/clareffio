@@ -13,7 +13,6 @@ on:
       - 'android/**'
       - 'src/**'
       - 'public/**'
-      - 'server/**'
       - 'scripts/patch-well-known.js'
       - 'capacitor.config.json'
       - 'package.json'
@@ -91,13 +90,17 @@ jobs:
             echo "Android signing secrets missing — unsigned release build"
           fi
 
-      - name: Extract upload key SHA256 (for App Links verification)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_STORE_PASSWORD != '' }}
+      - name: Extract upload key SHA256 when signing is configured
         working-directory: android
         env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_STORE_PASSWORD" ] || [ ! -f release.keystore ]; then
+            echo "Signing not configured — skipping upload key fingerprint extraction"
+            exit 0
+          fi
           SHA=$(keytool -list -v -keystore release.keystore -alias "$ANDROID_KEY_ALIAS" -storepass "$ANDROID_STORE_PASSWORD" 2>/dev/null | awk -F': ' '/SHA256:/ {print $2; exit}')
           if [ -n "$SHA" ]; then
             echo "Upload key SHA256: $SHA"
@@ -133,11 +136,25 @@ jobs:
           if-no-files-found: warn
 
   upload-google-play:
-    if: ${{ github.ref == 'refs/heads/main' && secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != '' && secrets.GOOGLE_PLAY_PACKAGE_NAME != '' }}
+    if: github.ref == 'refs/heads/main'
     needs: build-android
     runs-on: ubuntu-latest
     steps:
+      - name: Check Google Play configuration
+        id: play-config
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_PLAY_PACKAGE_NAME: ${{ secrets.GOOGLE_PLAY_PACKAGE_NAME }}
+        run: |
+          if [ -n "$GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" ] && [ -n "$GOOGLE_PLAY_PACKAGE_NAME" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Google Play secrets missing — upload skipped"
+          fi
+
       - name: Download AAB
+        if: steps.play-config.outputs.enabled == 'true'
         uses: actions/download-artifact@v4
         with:
           pattern: app-release-aab-*
@@ -145,6 +162,7 @@ jobs:
           path: artifacts
 
       - name: Upload to Google Play
+        if: steps.play-config.outputs.enabled == 'true'
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
