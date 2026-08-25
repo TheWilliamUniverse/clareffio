@@ -57,12 +57,13 @@ Configuration cible :
 Variables frontend minimales :
 
 ```env
-NODE_ENV=production
 VITE_APP_NAME=Clareffio
 VITE_APP_URL=https://clareffio.willentreprises.com
 VITE_API_BASE_URL=https://api.greffio.willentreprises.com
 API_PUBLIC_URL=https://api.greffio.willentreprises.com
 ```
+
+Ne pas définir `NODE_ENV=production` avant l'installation/build Hostinger : Vite est installé comme `devDependency`.
 
 Ne jamais exposer dans l'application frontend les secrets backend (`DATABASE_URL`, service-role Supabase, secrets AWS, JWT, OpenAI, Mollie, etc.).
 
