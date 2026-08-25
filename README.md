@@ -1,99 +1,89 @@
-# Greffio
+# Clareffio
 
-Plateforme SaaS de formalités d'entreprise (création, modification, suivi dossier, documents, paiement, opérations).
+Plateforme SaaS de formalités d'entreprise : création, modification, suivi de dossier, documents, signature, paiement et opérations.
 
 ## Stack
 
-- Frontend: React + Vite
-- Backend: Node.js + Express
-- Process: PM2
-- Reverse proxy: Nginx
-- DB: Supabase Postgres (fallback SQLite local dev)
-- Paiement B2C: Google Pay (CAWL en aval) · B2B: GoCardless
+- Frontend : React 18 + Vite
+- Frontend Hostinger Web App : Node.js + Express pour servir `dist`
+- Backend : Node.js + Express, actuellement conservé sur l'infrastructure API historique pendant la migration
+- Base : Supabase/PostgreSQL
+- Stockage documents : S3 en production
+- Mobile : Capacitor / Expo selon cible
 
-## URL cibles
+## URLs de migration
 
-- Frontend: `https://greffio.willentreprises.com`
-- API: `https://api.greffio.willentreprises.com`
+- Frontend Clareffio : `https://clareffio.willentreprises.com`
+- API provisoire : `https://api.greffio.willentreprises.com`
+- Domaine final prévu ultérieurement : `https://clareffio.com`
 
-## Lancement local
+Le renommage du frontend ne doit pas entraîner une modification prématurée des identifiants techniques, callbacks ou buckets utilisés par la production.
+
+## Développement local
 
 ```bash
-npm install
+npm ci
 npm run dev
+```
+
+Backend local si nécessaire :
+
+```bash
 npm run dev:api
 ```
 
-## Déploiement
-
-- Frontend Hostinger Git Deploy: `FRONTEND_HOSTINGER_GIT_DEPLOY.md`
-- Backend VPS setup: `BACKEND_VPS_SETUP.md`
-- Runbook global: `RUNBOOK_DEPLOYMENT.md`
-
-## Assistant Greffio (backend)
-
-Greffio expose un endpoint serveur pour Assistant Greffio (propulse par ChatGPT):
-
-- `POST /api/assistant` (auth requise)
-
-Configuration backend (`.env` VPS):
-
-```env
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-5.1-mini
-```
-
-Important:
-
-- Ne jamais exposer `OPENAI_API_KEY` au frontend.
-- Regenerer toute cle API ayant ete partagee en clair.
-
-## Stockage documents (Supabase)
-
-Greffio supporte deux drivers:
-
-- `DOCUMENT_STORAGE_DRIVER=local` (dev/local)
-- `DOCUMENT_STORAGE_DRIVER=supabase` (prod recommande)
-
-Variables backend:
-
-```env
-SUPABASE_URL=https://<project>.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=...
-SUPABASE_STORAGE_BUCKET=greffio-documents
-DOCUMENT_STORAGE_DRIVER=supabase
-```
-
-Comportement:
-
-- Upload document vers Supabase Storage si configure.
-- Fallback local automatique si indisponible (pas de blocage dossier).
-- Download via URL signee pour les objets Supabase.
-
-## Exploitation VPS (workflow recommande)
-
-Script de deploiement:
-
-- `scripts/vps-deploy.sh`
-
-Exemple:
+## Build production
 
 ```bash
-ssh root@<vps>
-cd /opt/greffio
-chmod +x scripts/vps-deploy.sh
-APP_DIR=/opt/greffio PM2_NAME=greffio-api BRANCH=main scripts/vps-deploy.sh
+npm run build
 ```
 
-Ce script fait:
+Le build Vite est généré dans `dist/`.
 
-1. sync git sur `main`
-2. `npm ci --omit=dev`
-3. migrations Postgres
-4. restart PM2 avec `--update-env`
-5. healthcheck local API
+## Hostinger Web App via GitHub
 
-## Sécurité
+Voir `FRONTEND_HOSTINGER_GIT_DEPLOY.md`.
 
-- Ne jamais commit les secrets.
-- Garder `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_PAY_API_KEY`, `CAWL_API_KEY`, `JWT_SECRET`, `DATABASE_URL` côté backend uniquement.
+Configuration cible :
+
+- repository : `TheWilliamUniverse/clareffio`
+- branch : `main`
+- Node.js : `20.x`
+- install : `npm ci`
+- build : `npm run hostinger:build`
+- output : `dist`
+- entry file : `server/hostinger-frontend.js`
+
+Variables frontend minimales :
+
+```env
+NODE_ENV=production
+VITE_APP_NAME=Clareffio
+VITE_APP_URL=https://clareffio.willentreprises.com
+VITE_API_BASE_URL=https://api.greffio.willentreprises.com
+API_PUBLIC_URL=https://api.greffio.willentreprises.com
+```
+
+Ne jamais exposer dans l'application frontend les secrets backend (`DATABASE_URL`, service-role Supabase, secrets AWS, JWT, OpenAI, Mollie, etc.).
+
+## Identité visuelle
+
+- Wordmark : `public/icons/clareffio-wordmark.svg`
+- Symbole arc : `public/icons/clareffio-arc.svg`
+
+Le wordmark est utilisé dans l'interface. L'arc est réservé aux usages d'icône, favicon, store et animation de chargement selon l'identité validée.
+
+## Vérification
+
+Le workflow `.github/workflows/frontend-ci.yml` vérifie notamment le build et les routes frontend sur les pushes de `main`.
+
+Après déploiement Hostinger, vérifier d'abord :
+
+```text
+/health
+/
+/login
+/tarifs
+```
+
+`/health` doit identifier le service comme `clareffio-frontend`.
