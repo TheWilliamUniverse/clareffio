@@ -48,7 +48,7 @@ Configuration cible :
 
 - repository : `TheWilliamUniverse/clareffio`
 - branch : `main`
-- Node.js : `20.x`
+- Node.js : `22.x`
 - install : `npm ci`
 - build : `npm run hostinger:build`
 - output : `dist`
@@ -76,7 +76,8 @@ Le wordmark est utilisé dans l'interface. L'arc est réservé aux usages d'icô
 
 ## Vérification
 
-Le workflow `.github/workflows/frontend-ci.yml` vérifie notamment le build et les routes frontend sur les pushes de `main`.
+- `.github/workflows/frontend-ci.yml` vérifie le projet frontend général.
+- `.github/workflows/hostinger-readiness.yml` reproduit le chemin critique réellement utilisé par Hostinger Web App.
 
 Après déploiement Hostinger, vérifier d'abord :
 
