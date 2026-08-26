@@ -1,0 +1,100 @@
+name: One-time Clareffio CI cleanup
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Run one-time Clareffio CI cleanup'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fix inherited lint blockers and Clareffio-facing labels
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new, count=-1):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Expected text not found in {path}: {old!r}')
+              p.write_text(text.replace(old, new, count), encoding='utf-8')
+
+          # ESLint no-control-regex: preserve tab/newline/CR but strip other ASCII control chars.
+          replace(
+              'server/assistant/assistantController.js',
+              "  return clean.replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '');",
+              "  return Array.from(clean).filter((character) => {\n    const code = character.charCodeAt(0);\n    return code === 9 || code === 10 || code === 13 || (code >= 32 && code !== 127);\n  }).join('');",
+          )
+          p = Path('server/assistant/assistantController.js')
+          p.write_text(p.read_text(encoding='utf-8').replace('propre dossier Greffio', 'propre dossier Clareffio'), encoding='utf-8')
+
+          # Duplicate object key in the mirrored frontend/backend resource catalogues.
+          for path in ['src/config/resourceServices.js', 'server/config/resourceServices.js']:
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              needle = "  searchTerms: [],\n  ...entry,\n"
+              if needle not in text:
+                  raise SystemExit(f'Duplicate searchTerms insertion point missing in {path}')
+              text = text.replace(needle, "  ...entry,\n", 1)
+              # These are display strings/comments only; identifiers and API compatibility remain untouched.
+              text = text.replace('Greffio', 'Clareffio')
+              p.write_text(text, encoding='utf-8')
+
+          # PdfPreviewPanel referenced onOpen without declaring the prop; also honor className.
+          replace(
+              'src/components/documents/PdfPreviewPanel.jsx',
+              "  filename = 'document.pdf',\n  emptyMessage",
+              "  filename = 'document.pdf',\n  onOpen = null,\n  emptyMessage",
+          )
+          replace(
+              'src/components/documents/PdfPreviewPanel.jsx',
+              "<section className={`flex flex-col bg-[#1e293b] ${expanded ? 'min-h-0 flex-1' : 'min-h-[280px] md:min-h-[420px]'}`}>",
+              "<section className={`flex flex-col bg-[#1e293b] ${expanded ? 'min-h-0 flex-1' : 'min-h-[280px] md:min-h-[420px]'} ${className}`}>",
+          )
+
+          # Give the memoized component a stable display name for React/ESLint/devtools.
+          replace(
+              'src/components/patterns/DocumentStatusCard.jsx',
+              'export const DocumentStatusCard = React.memo(({\n',
+              'export const DocumentStatusCard = React.memo(function DocumentStatusCard({\n',
+          )
+          replace(
+              'src/components/patterns/DocumentStatusCard.jsx',
+              '}) => {\n  const normalizedStatus',
+              '}) {\n  const normalizedStatus',
+              1,
+          )
+
+          # Restore the missing document-label resolver with a safe human-readable fallback.
+          dossier = Path('src/pages/DossierDetailPage.jsx')
+          text = dossier.read_text(encoding='utf-8')
+          anchor = "const mapDocumentsFromApi = (documents = [], { internalView = false } = {}) =>"
+          if anchor not in text:
+              raise SystemExit('DossierDetailPage mapDocuments anchor missing')
+          if 'const getDocumentTypeLabel =' not in text:
+              helper = """const getDocumentTypeLabel = (docKey, label) => {\n  const explicitLabel = String(label || '').trim();\n  if (explicitLabel) return explicitLabel;\n  const fallback = String(docKey || 'document').trim().replace(/[_-]+/g, ' ');\n  return fallback.charAt(0).toUpperCase() + fallback.slice(1);\n};\n\n"""
+              text = text.replace(anchor, helper + anchor, 1)
+          text = text.replace('Équipe Greffio', 'Équipe Clareffio')
+          text = text.replace('Contrôle Greffio', 'Contrôle Clareffio')
+          text = text.replace("doc.reviewerId ? 'Greffio' : 'Client'", "doc.reviewerId ? 'Clareffio' : 'Client'")
+          dossier.write_text(text, encoding='utf-8')
+          PY
+      - name: Remove one-time workflow and commit
+        run: |
+          git rm .github/workflows/one-time-ci-fix.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add server/assistant/assistantController.js server/config/resourceServices.js src/config/resourceServices.js src/components/documents/PdfPreviewPanel.jsx src/components/patterns/DocumentStatusCard.jsx src/pages/DossierDetailPage.jsx
+          git commit -m 'Fix Clareffio CI blockers before Hostinger launch'
+          git push origin HEAD:main
