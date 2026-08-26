@@ -58,7 +58,7 @@ const mapDossierFromApi = (d) => {
       legalForm: d.legalForm,
     }),
     nextAction: mapDossierClientAction(d.status, d.progressPercent),
-    expert: d.assignedToUserId || 'Équipe Greffio',
+    expert: d.assignedToUserId || 'Équipe Clareffio',
     createdAt: d.createdAt,
     dueDate: d.updatedAt || d.createdAt,
     progress: Number(d.progressPercent || 0),
@@ -76,11 +76,18 @@ const mapDossierFromApi = (d) => {
     steps: [
       { label: 'Informations dossier', done: Number(d.progressPercent || 0) >= 20 },
       { label: 'Documents justificatifs', done: Number(d.progressPercent || 0) >= 40 },
-      { label: 'Contrôle Greffio', done: Number(d.progressPercent || 0) >= 60 },
+      { label: 'Contrôle Clareffio', done: Number(d.progressPercent || 0) >= 60 },
       { label: 'Signature', done: Number(d.progressPercent || 0) >= 80 },
       { label: 'Dépôt formalité', done: Number(d.progressPercent || 0) >= 100 },
     ].filter((stepItem) => !(eiLike && stepItem.label.toLowerCase().includes('statuts'))),
   };
+};
+
+const getDocumentTypeLabel = (docKey, label) => {
+  const explicitLabel = String(label || '').trim();
+  if (explicitLabel) return explicitLabel;
+  const fallback = String(docKey || 'document').trim().replace(/[_-]+/g, ' ');
+  return fallback.charAt(0).toUpperCase() + fallback.slice(1);
 };
 
 const mapDocumentsFromApi = (documents = [], { internalView = false } = {}) => filterClientVisibleDocuments(documents).map((doc) => {
@@ -93,7 +100,7 @@ const mapDocumentsFromApi = (documents = [], { internalView = false } = {}) => f
     name: getDocumentTypeLabel(doc.docKey, doc.label),
     type: getDocumentTypeLabel(doc.docKey, doc.label),
     size: doc.fileSizeBytes ? `${Math.round(Number(doc.fileSizeBytes) / 1024)} Ko` : 'N/A',
-    providedBy: doc.reviewerId ? 'Greffio' : 'Client',
+    providedBy: doc.reviewerId ? 'Clareffio' : 'Client',
     source: internalView ? 'API' : null,
     status: displayStatus,
     date: doc.updatedAt || doc.createdAt,
@@ -495,7 +502,7 @@ export const DossierDetailPage = () => {
                     setMessages,
                     postMessage: internalView ? postOpsDossierMessage : postDossierMessage,
                     authorType: internalView ? 'ops' : 'client',
-                    authorName: internalView ? 'Équipe Greffio' : 'Vous',
+                    authorName: internalView ? 'Équipe Clareffio' : 'Vous',
                   });
                 }}
               />

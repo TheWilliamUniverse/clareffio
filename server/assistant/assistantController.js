@@ -10,7 +10,10 @@ initializeKnowledgeIndex();
 
 const sanitizeMessage = (message) => {
   const clean = String(message || '').trim().slice(0, MAX_MESSAGE_LENGTH);
-  return clean.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  return Array.from(clean).filter((character) => {
+    const code = character.charCodeAt(0);
+    return code === 9 || code === 10 || code === 13 || (code >= 32 && code !== 127);
+  }).join('');
 };
 
 const computeConfidence = ({
@@ -96,7 +99,7 @@ export const handleAssistantRequest = async ({
 
   if (context.dossierAccessError) {
     return {
-      answer: 'Je ne peux pas accéder à ce dossier. Vérifiez que vous consultez bien votre propre dossier Greffio.',
+      answer: 'Je ne peux pas accéder à ce dossier. Vérifiez que vous consultez bien votre propre dossier Clareffio.',
       suggestedActions: [{ type: 'navigation', label: 'Voir mes dossiers', url: '/dossiers' }],
       sources: [],
       confidence: 'high',

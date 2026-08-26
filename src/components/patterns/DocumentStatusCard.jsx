@@ -19,7 +19,7 @@ const STATUS_VARIANTS = {
   requires_manual_review: 'bg-secondary text-primary',
 };
 
-export const DocumentStatusCard = React.memo(({
+export const DocumentStatusCard = React.memo(function DocumentStatusCard({
   title,
   subtitle,
   status,
@@ -30,7 +30,7 @@ export const DocumentStatusCard = React.memo(({
   actions = [],
   className,
   shieldNotch = false,
-}) => {
+}) {
   const normalizedStatus = status || 'requires_manual_review';
   const statusLabel = FORMALITY_POWER_STATUS_LABELS[normalizedStatus] || 'À vérifier';
 

@@ -1,5 +1,5 @@
 /**
- * Catalogue des ressources et services Greffio (prix indicatifs, modifiables ici).
+ * Catalogue des ressources et services Clareffio (prix indicatifs, modifiables ici).
  */
 
 export const RESOURCE_KIND_LABELS = {
@@ -14,7 +14,7 @@ export const CATEGORY_LABELS = {
   official_document: 'Document officiel',
   certified_copy: 'Copie certifiée',
   simple_service: 'Service rapide',
-  pack: 'Pack Greffio',
+  pack: 'Pack Clareffio',
   guide: 'Guide',
   tool: 'Outil',
 };
@@ -25,8 +25,7 @@ const item = (entry) => ({
   requiresCompany: true,
   requiresSiren: true,
   actionLabel: 'Commander',
-  source: 'Greffio',
-  searchTerms: [],
+  source: 'Clareffio',
   ...entry,
   searchTerms: [
     ...(entry.searchTerms || []),
@@ -264,7 +263,7 @@ export const SIMPLE_SERVICES = [
     kind: 'service',
     category: 'simple_service',
     title: 'Téléchargement d’un pack disponible',
-    description: 'Export des documents déjà générés ou validés dans Greffio.',
+    description: 'Export des documents déjà générés ou validés dans Clareffio.',
     priceTtc: 0,
     estimatedDelay: 'Immédiat',
     actionLabel: 'Voir mon espace',
@@ -502,7 +501,7 @@ export const QUICK_TOOLS = [
     kind: 'tool',
     category: 'tool',
     title: 'Compléter un PDF',
-    description: 'Importez un Cerfa ou formulaire administratif – Greffio place des champs bleus remplissables.',
+    description: 'Importez un Cerfa ou formulaire administratif – Clareffio place des champs bleus remplissables.',
     priceTtc: 0,
     actionLabel: 'Ouvrir l’assistant',
     processingMode: 'available',
@@ -569,7 +568,7 @@ export const QUICK_TOOLS = [
     kind: 'tool',
     category: 'tool',
     title: 'Préparer un dossier de formalité',
-    description: 'Démarrer un parcours guidé Greffio.',
+    description: 'Démarrer un parcours guidé Clareffio.',
     priceTtc: 0,
     actionLabel: 'Démarrer',
     processingMode: 'available',
@@ -626,7 +625,7 @@ export const formatResourcePrice = (priceTtc) => {
 
 export const getProcessingLabel = (item) => {
   if (!item?.available) return 'Disponible prochainement';
-  if (item.processingMode === 'guided') return 'Traitement par l’équipe Greffio';
+  if (item.processingMode === 'guided') return 'Traitement par l’équipe Clareffio';
   if (item.processingMode === 'coming_soon') return 'Disponible prochainement';
   return 'Commande guidée';
 };
