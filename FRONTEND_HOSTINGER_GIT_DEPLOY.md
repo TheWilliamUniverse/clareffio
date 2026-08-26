@@ -7,7 +7,7 @@ Ce dépôt est préparé pour être connecté directement à **Hostinger → Dep
 - Repository : `TheWilliamUniverse/clareffio`
 - Branch : `main`
 - Root directory : `./`
-- Node.js : `20.x`
+- Node.js : `22.x`
 - Framework : `Other` si l'auto-détection React ne permet pas de définir l'entry file
 
 ## Build Hostinger
@@ -52,6 +52,10 @@ Ne pas copier les secrets backend dans cette Web App :
 - toute autre clé privée / service-role
 
 Ils restent sur l'infrastructure backend.
+
+## Vérification avant activation
+
+Le workflow GitHub Actions `Hostinger Readiness` reproduit le chemin critique du déploiement : `npm ci`, build Vite, contrôle des assets, lancement de `hostinger-entry.js`, `/health`, `/`, `/login` et `/tarifs`.
 
 ## Vérification après déploiement
 
