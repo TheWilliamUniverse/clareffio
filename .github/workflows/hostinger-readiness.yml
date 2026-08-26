@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      NODE_ENV: production
       VITE_APP_NAME: Clareffio
       VITE_APP_URL: https://clareffio.willentreprises.com
       VITE_API_BASE_URL: https://api.greffio.willentreprises.com
@@ -29,13 +28,13 @@ jobs:
       - name: Check deployment output
         run: |
           test -f dist/index.html
-          test -f server.js
+          test -f hostinger-entry.js
           test -f server/hostinger-frontend.js
           test -f dist/icons/clareffio-wordmark.svg
           test -f dist/icons/clareffio-arc.svg
       - name: Start Hostinger entrypoint
         run: |
-          PORT=3000 node server.js > /tmp/clareffio-hostinger.log 2>&1 &
+          NODE_ENV=production PORT=3000 node hostinger-entry.js > /tmp/clareffio-hostinger.log 2>&1 &
           echo $! > /tmp/clareffio-hostinger.pid
           for attempt in {1..30}; do
             if curl -fsS http://127.0.0.1:3000/health >/tmp/clareffio-health.json; then
