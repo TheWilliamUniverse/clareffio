@@ -1,0 +1,63 @@
+name: Hostinger Readiness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  web-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: production
+      VITE_APP_NAME: Clareffio
+      VITE_APP_URL: https://clareffio.willentreprises.com
+      VITE_API_BASE_URL: https://api.greffio.willentreprises.com
+      API_PUBLIC_URL: https://api.greffio.willentreprises.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build exactly as Hostinger
+        run: npm run hostinger:build
+      - name: Check deployment output
+        run: |
+          test -f dist/index.html
+          test -f server.js
+          test -f server/hostinger-frontend.js
+          test -f dist/icons/clareffio-wordmark.svg
+          test -f dist/icons/clareffio-arc.svg
+      - name: Start Hostinger entrypoint
+        run: |
+          PORT=3000 node server.js > /tmp/clareffio-hostinger.log 2>&1 &
+          echo $! > /tmp/clareffio-hostinger.pid
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/health >/tmp/clareffio-health.json; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/clareffio-hostinger.log
+          exit 1
+      - name: Verify health and SPA routes
+        run: |
+          cat /tmp/clareffio-health.json
+          grep -q '"ok":true' /tmp/clareffio-health.json
+          grep -q '"service":"clareffio-frontend"' /tmp/clareffio-health.json
+          curl -fsS http://127.0.0.1:3000/ >/tmp/home.html
+          curl -fsS http://127.0.0.1:3000/login >/tmp/login.html
+          curl -fsS http://127.0.0.1:3000/tarifs >/tmp/tarifs.html
+          grep -q 'Clareffio' /tmp/home.html
+          grep -q '/icons/clareffio-arc.svg' /tmp/home.html
+      - name: Stop test server
+        if: always()
+        run: |
+          if [ -f /tmp/clareffio-hostinger.pid ]; then
+            kill "$(cat /tmp/clareffio-hostinger.pid)" 2>/dev/null || true
+          fi
